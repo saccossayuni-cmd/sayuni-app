@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="sw">
+<head>
+<meta charset="utf-8">
+<title>Sayuni Saccos</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1972af">
+<meta name="description" content="Sayuni Saccos - mfumo wa wanachama na watumishi">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sayuni Saccos">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png">
+<link rel="apple-touch-icon" href="icons/apple-180.png">
+<style>
+  html, body { margin: 0; height: 100%; background: #1972af; overflow: hidden; }
+  #app { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; background: #1972af; }
+  #splash { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; background: #1972af; color: #fff; font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif; transition: opacity .4s; z-index: 5; }
+  #splash.enda { opacity: 0; pointer-events: none; }
+  #splash .tile { width: 96px; height: 96px; border-radius: 24px; background: #fff; display: grid; place-items: center; box-shadow: 0 12px 30px rgba(0,0,0,.25); }
+  #splash img { width: 68px; height: 68px; }
+  #splash .jina { font-weight: 700; letter-spacing: .5px; font-size: 15px; opacity: .95; }
+  #splash .duara { width: 26px; height: 26px; border-radius: 50%; border: 3px solid rgba(255,255,255,.35); border-top-color: #fff; animation: zunguka .8s linear infinite; }
+  @keyframes zunguka { to { transform: rotate(360deg); } }
+  #sakinisha { position: fixed; left: 12px; right: 12px; bottom: 12px; display: none; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; background: #fff; color: #10213a; box-shadow: 0 10px 30px rgba(0,0,0,.3); font-family: system-ui, sans-serif; font-size: 14px; z-index: 10; }
+  #sakinisha.ona { display: flex; }
+  #sakinisha img { width: 40px; height: 40px; border-radius: 10px; }
+  #sakinisha b { display: block; font-size: 14px; }
+  #sakinisha span { font-size: 12px; opacity: .75; }
+  #sakinisha .nafasi { flex: 1; }
+  #sakinisha button { border: 0; border-radius: 999px; padding: 9px 14px; font-weight: 700; cursor: pointer; }
+  #sakinisha .ok { background: #1972af; color: #fff; }
+  #sakinisha .funga { background: transparent; color: #666; padding: 9px 6px; }
+  #nje { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; text-align: center; padding: 24px; background: #1972af; color: #fff; font-family: system-ui, sans-serif; z-index: 6; }
+  #nje.ona { display: flex; }
+  #nje button { margin-top: 14px; border: 0; border-radius: 999px; padding: 10px 18px; font-weight: 700; background: #fff; color: #10213a; }
+</style>
+</head>
+<body>
+<div id="splash" aria-hidden="true"><div class="tile"><img src="icons/mark.png" alt=""></div><div class="jina">SAYUNI SACCOS</div><div class="duara"></div></div>
+<div id="nje"><div><p><b>Huna mtandao kwa sasa.</b><br>Unganisha intaneti kisha jaribu tena.</p><button onclick="location.reload()">Jaribu tena</button></div></div>
+<iframe id="app" src="https://script.google.com/macros/s/AKfycbz9EEoFiwEHdiSaIMdaDw2HDpycQo7VRxgaRamu9C_P1n4wmamHd45fFK8pzRIqDX5A4Q/exec?pwa=1" title="Sayuni Saccos" allow="clipboard-write; web-share" referrerpolicy="no-referrer-when-downgrade"></iframe>
+<div id="sakinisha" role="dialog" aria-label="Sakinisha app">
+  <img src="icons/icon-192.png" alt="">
+  <div class="nafasi"><b>Weka Sayuni Saccos kwenye simu yako</b><span>Ikoni kwenye skrini ya mwanzo, inafunguka kama app.</span></div>
+  <button class="funga" id="skFunga" aria-label="Funga">✕</button>
+  <button class="ok" id="skOk">Sakinisha</button>
+</div>
+<script>
+(function () {
+  var app = document.getElementById('app'), splash = document.getElementById('splash'), nje = document.getElementById('nje');
+  function ficha() { splash.classList.add('enda'); setTimeout(function () { splash.remove(); }, 500); }
+  app.addEventListener('load', function () { setTimeout(ficha, 300); });
+  setTimeout(ficha, 9000);
+  if (!navigator.onLine) nje.classList.add('ona');
+  window.addEventListener('online', function () { nje.classList.remove('ona'); });
+  window.addEventListener('offline', function () { nje.classList.add('ona'); });
+  if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js').catch(function () {}); }
+  var tukio = null, k = document.getElementById('sakinisha');
+  var imekataliwa = 0; try { imekataliwa = Number(localStorage.getItem('sk_kataa') || 0); } catch (e) {}
+  var tayari = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault(); tukio = e;
+    if (tayari || (imekataliwa && Date.now() - imekataliwa < 7 * 864e5)) return;
+    setTimeout(function () { k.classList.add('ona'); }, 2500);
+  });
+  document.getElementById('skOk').addEventListener('click', function () {
+    k.classList.remove('ona'); if (!tukio) return; tukio.prompt(); tukio.userChoice.then(function () { tukio = null; });
+  });
+  document.getElementById('skFunga').addEventListener('click', function () {
+    k.classList.remove('ona'); try { localStorage.setItem('sk_kataa', String(Date.now())); } catch (e) {}
+  });
+  window.addEventListener('appinstalled', function () { k.classList.remove('ona'); });
+  // iOS haina beforeinstallprompt: onyesha maelekezo mara moja
+  var iOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  if (iOS && !tayari && !(imekataliwa && Date.now() - imekataliwa < 7 * 864e5)) {
+    k.querySelector('span').textContent = 'Bonyeza "Share" kisha "Add to Home Screen".';
+    document.getElementById('skOk').style.display = 'none';
+    setTimeout(function () { k.classList.add('ona'); }, 2500);
+  }
+})();
+</script>
+</body>
+</html>
